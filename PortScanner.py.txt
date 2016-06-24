@@ -1,0 +1,65 @@
+#-------------------------------------------------------------------------------
+# Name:        Multithreaded Port Scanner
+# Purpose:
+#
+# Author:      Sudeep
+#
+# Created:     23/06/2014
+# Copyright:   (c) Sudeep 2014
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+
+from socket import *
+from threading import *
+
+def connect_to_socket(host, port):
+    lock_object = Semaphore(value=1)
+    try:
+        sckt = socket(AF_INET, SOCK_STREAM)
+        sckt.connect((host, port))
+        sckt.send('Hello\r\n')
+        results = sckt.recv(100)
+        lock_object.acquire()
+        print 'Port %d open '% port
+        print '\n'
+        print str(results)
+    except:
+        lock_object.acquire()
+        print 'Port %d closed '% port
+    finally:
+        lock_object.release()
+        sckt.close()
+        print '\n'
+
+def scan_ports(host, ports):
+    try:
+        targetIP = gethostbyname(host)
+    except:
+        print "Could not resolve host:'%s'"%host
+        return
+    try:
+        tgtName = gethostbyaddr(targetIP)
+        print '\nScanning: ' + tgtName[0]
+    except:
+        print '\n Scanning: ' + targetIP
+    setdefaulttimeout(1)
+    for port in ports:
+        t = Thread(target=connect_to_socket, args=(host, int(port)))
+        t.start()
+
+
+
+def main():
+
+    websiteaddr = raw_input("Please enter the website address you want to scan e.g., yahoo.com or google.com")
+    rl = raw_input("Please enter the lower limit of the range (in number) >>> ")
+    ru = raw_input("Please enter the upper limit of the range (in number) >>> ")
+    
+    lower = int(rl)
+    upper = int(ru)
+    ports = range(lower,upper)
+    ports= map(str, ports)
+    scan_ports(websiteaddr, ports)
+
+if __name__ == '__main__':
+    main()
