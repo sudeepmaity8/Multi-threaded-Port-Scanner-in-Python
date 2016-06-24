@@ -2,7 +2,7 @@
 # Name:        Multithreaded Port Scanner
 # Purpose:
 #
-# Author:      Sudeep
+# Author:      Sudeep maity
 #
 # Created:     23/06/2014
 # Copyright:   (c) Sudeep 2014
